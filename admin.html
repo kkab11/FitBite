@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitBite Admin – Control Panel</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --green: #16a34a;
+            --green-light: #4ade80;
+            --green-bg: #f0fdf4;
+            --green-border: #bbf7d0;
+            --dark: #1e293b;
+            --gray-bg: #f5f5f5;
+            --card-border: #e5e7eb;
+            --text: #1a1a1a;
+            --muted: #6b7280;
+            --red: #ef4444;
+            --orange: #ea580c;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background: var(--gray-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ─── TOP BAR ─── */
+        #adminHeader {
+            background: white;
+            border-bottom: 2px solid var(--card-border);
+            padding: 14px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+        .admin-logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .admin-logo span { color: var(--green); }
+        .admin-badge {
+            background: var(--green-bg);
+            border: 1px solid var(--green-border);
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .view-site-btn {
+            background: var(--dark);
+            color: white;
+            padding: 9px 18px;
+            border: none;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', Arial, sans-serif;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .view-site-btn:hover { background: #0f172a; }
+
+        /* ─── LAYOUT ─── */
+        .admin-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 36px 30px;
+        }
+
+        /* ─── STATS ROW ─── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: box-shadow 0.2s;
+        }
+        .stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .stat-icon.green { background: var(--green-bg); }
+        .stat-icon.orange { background: #fff7ed; }
+        .stat-icon.blue { background: #eff6ff; }
+        .stat-icon.purple { background: #faf5ff; }
+        .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
+        }
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        /* ─── SECTION TITLE ─── */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+        }
+        .section-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* ─── GREEN BUTTON ─── */
+        .green-btn {
+            background: var(--green);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Poppins', Arial, sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .green-btn:hover { background: #15803d; }
+        .green-btn:active { transform: scale(0.98); }
+
+        /* ─── INVENTORY TABLE ─── */
+        .inventory-panel {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .inventory-table thead tr {
+            background: #f9fafb;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .inventory-table th {
+            text-align: left;
+            padding: 14px 18px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .inventory-table td {
+            padding: 16px 18px;
+            font-size: 14px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+        .inventory-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .inventory-table tbody tr:hover {
+            background: #fafafa;
+        }
+        .product-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .prod-thumb {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--card-border);
+            background: #f9fafb;
+            flex-shrink: 0;
+        }
+        .prod-thumb-emoji {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            background: var(--green-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .prod-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text);
+        }
+        .prod-cat {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+        .qty-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border: 1.5px solid var(--card-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: #f9fafb;
+            color: var(--text);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+        .qty-btn:hover { background: var(--green-bg); color: var(--green); }
+        .qty-display {
+            width: 46px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            border-left: 1px solid var(--card-border);
+            border-right: 1px solid var(--card-border);
+            padding: 4px 0;
+            font-family: 'Poppins', Arial, sans-serif;
+            background: white;
+            outline: none;
+        }
+        .qty-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 20px;
+        }
+        .qty-badge.high { background: var(--green-bg); color: var(--green); }
+        .qty-badge.low { background: #fff7ed; color: var(--orange); }
+        .qty-badge.zero { background: #fee2e2; color: var(--red); }
+
+        .price-cell { font-weight: 700; color: var(--text); }
+        .save-btn {
+            background: var(--green-bg);
+            color: var(--green);
+            border: 1.5px solid var(--green-border);
+            padding: 7px 14px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Poppins', Arial, sans-serif;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .save-btn:hover { background: var(--green); color: white; }
+        .save-btn:active { transform: scale(0.97); }
+        .delete-btn {
+            background: #fee2e2;
+            color: var(--red);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 7px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .delete-btn:hover { background: var(--red); color: white; }
+
+        /* ─── ADD PRODUCT PANEL ─── */
+        .add-panel {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 32px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 24px;
+        }
+        .form-grid .full-col { grid-column: 1 / -1; }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 14px;
+            border: 1.5px solid var(--card-border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Poppins', Arial, sans-serif;
+            color: var(--text);
+            background: #fafafa;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+            background: white;
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .add-form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .reset-btn {
+            background: white;
+            color: var(--muted);
+            border: 1.5px solid var(--card-border);
+            padding: 10px 20px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', Arial, sans-serif;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+        /* ─── ACTIVITY LOG ─── */
+        .log-panel {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .log-panel-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .log-list {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            padding: 13px 22px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13px;
+        }
+        .log-entry:last-child { border-bottom: none; }
+        .log-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+        .log-dot.green { background: var(--green); }
+        .log-dot.orange { background: var(--orange); }
+        .log-dot.red { background: var(--red); }
+        .log-dot.blue { background: #3b82f6; }
+        .log-text { flex: 1; color: var(--text); }
+        .log-time { color: var(--muted); font-size: 11px; white-space: nowrap; }
+        .log-empty {
+            padding: 30px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* ─── TOAST ─── */
+        #adminToast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(15px);
+            background: var(--dark);
+            color: white;
+            padding: 11px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.25s;
+            pointer-events: none;
+            white-space: nowrap;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+        #adminToast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ─── CONFIRM DIALOG ─── */
+        #confirmOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #confirmOverlay.open { display: flex; }
+        .confirm-box {
+            background: white;
+            border-radius: 14px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        .confirm-box .icon { font-size: 40px; margin-bottom: 14px; }
+        .confirm-box h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+        .confirm-box p { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+        .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+        .cancel-btn {
+            background: #f3f4f6;
+            color: var(--text);
+            border: none;
+            padding: 10px 22px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+        .danger-btn {
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+
+        /* ─── BADGE COLORS ─── */
+        .badge-row { display: flex; gap: 6px; flex-wrap: wrap; }
+        .tag-chip {
+            background: var(--green-bg);
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media(max-width: 768px) {
+            .admin-wrap { padding: 20px 16px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .inventory-table th:nth-child(4),
+            .inventory-table td:nth-child(4) { display: none; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+        }
+        @media(max-width: 480px) {
+            #adminHeader { padding: 12px 16px; }
+            .admin-logo { font-size: 16px; }
+            .stats-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="adminHeader">
+    <div class="admin-logo">
+        🌿 FitBite <span>Admin</span>
+        <span class="admin-badge">Control Panel</span>
+    </div>
+    <div class="header-right">
+        <a href="index.html" class="view-site-btn" target="_blank">🌐 View Live Site</a>
+    </div>
+</div>
+
+<div class="admin-wrap">
+
+    <!-- STATS ROW -->
+    <div class="stats-row" id="statsRow">
+        <div class="stat-card">
+            <div class="stat-icon green">📦</div>
+            <div>
+                <div class="stat-label">Total Products</div>
+                <div class="stat-value" id="statTotalProducts">0</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange">🔢</div>
+            <div>
+                <div class="stat-label">Total Units</div>
+                <div class="stat-value" id="statTotalUnits">0</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon purple">⚠️</div>
+            <div>
+                <div class="stat-label">Low Stock (&lt;10)</div>
+                <div class="stat-value" id="statLowStock">0</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon blue">💰</div>
+            <div>
+                <div class="stat-label">Inventory Value</div>
+                <div class="stat-value" id="statValue">Rs.0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVENTORY TABLE -->
+    <div class="section-header">
+        <div>
+            <div class="section-title">📋 Product Inventory</div>
+            <div class="section-sub">Manage stock levels and product details</div>
+        </div>
+        <button class="green-btn" onclick="document.getElementById('addProductSection').scrollIntoView({behavior:'smooth'})">
+            ➕ Add New Product
+        </button>
+    </div>
+
+    <div class="inventory-panel">
+        <table class="inventory-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity (Units)</th>
+                    <th>Tags</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryBody">
+                <!-- rows injected by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ADD PRODUCT -->
+    <div id="addProductSection">
+        <div class="section-header">
+            <div>
+                <div class="section-title">➕ Add New Product</div>
+                <div class="section-sub">New products will appear live on the main store page</div>
+            </div>
+        </div>
+
+        <div class="add-panel">
+            <form id="addProductForm" onsubmit="handleAddProduct(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Product Name *</label>
+                        <input type="text" id="newName" placeholder="e.g. FitBite Mango Bites" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category / Emoji Label *</label>
+                        <input type="text" id="newCat" placeholder="e.g. 🥭 Tropical Snack" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (Rs.) *</label>
+                        <input type="number" id="newPrice" placeholder="e.g. 179" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Original Price (Rs.) *</label>
+                        <input type="number" id="newOldPrice" placeholder="e.g. 230" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Initial Stock (Units) *</label>
+                        <input type="number" id="newQty" placeholder="e.g. 50" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Product Emoji Icon</label>
+                        <input type="text" id="newEmoji" placeholder="e.g. 🥭" maxlength="4" value="🌿">
+                    </div>
+                    <div class="form-group full-col">
+                        <label>Description *</label>
+                        <textarea id="newDesc" placeholder="e.g. Tropical mango slices, sun-dried and lightly seasoned. No added sugar."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Tag 1</label>
+                        <input type="text" id="newTag1" placeholder="e.g. No Added Sugar">
+                    </div>
+                    <div class="form-group">
+                        <label>Tag 2</label>
+                        <input type="text" id="newTag2" placeholder="e.g. Vegan">
+                    </div>
+                    <div class="form-group">
+                        <label>Badge Label (optional)</label>
+                        <input type="text" id="newBadge" placeholder="e.g. 🔥 New Arrival">
+                    </div>
+                    <div class="form-group">
+                        <label>Badge Color</label>
+                        <select id="newBadgeColor">
+                            <option value="">None</option>
+                            <option value="orange-badge">🟠 Orange</option>
+                            <option value="green-badge">🟢 Green</option>
+                            <option value="purple-badge">🟣 Purple</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-col">
+                        <label>Product Image File Name (must be in same folder)</label>
+                        <input type="text" id="newImage" placeholder="e.g. product_mango_bites.png  (leave blank to use emoji)">
+                    </div>
+                </div>
+                <div class="add-form-actions">
+                    <button type="submit" class="green-btn">✅ Add Product to Store</button>
+                    <button type="button" class="reset-btn" onclick="resetAddForm()">↺ Reset Form</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="section-header" style="margin-top: 0;">
+        <div>
+            <div class="section-title">🕐 Activity Log</div>
+            <div class="section-sub">Recent admin actions</div>
+        </div>
+        <button class="reset-btn" onclick="clearLog()" style="font-size:12px; padding:7px 14px;">Clear Log</button>
+    </div>
+
+    <div class="log-panel">
+        <div class="log-list" id="logList">
+            <div class="log-empty" id="logEmpty">No activity yet. Actions will appear here.</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div id="confirmOverlay">
+    <div class="confirm-box">
+        <div class="icon">🗑️</div>
+        <h3>Delete Product?</h3>
+        <p id="confirmText">This will remove the product from the store permanently.</p>
+        <div class="confirm-actions">
+            <button class="cancel-btn" onclick="closeConfirm()">Cancel</button>
+            <button class="danger-btn" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="adminToast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  DEFAULT PRODUCT LIST (matches index.html)
+// ─────────────────────────────────────────────
+var DEFAULT_PRODUCTS = [
+    {
+        id: 1,
+        name: 'FitBite Protein Bar Pack',
+        cat: '💪 Protein Pack',
+        price: 249,
+        oldPrice: 320,
+        qty: 48,
+        emoji: '💪',
+        image: 'product_yoga_bar.png',
+        desc: 'High protein & fiber for post-workout. 6 bars in assorted flavors – Choco Almond, Oats & Honey, Cranberry Crunch.',
+        tag1: '20g Protein',
+        tag2: 'No Added Sugar',
+        badge: '🔥 Best Seller',
+        badgeColor: 'orange-badge',
+        custom: false
+    },
+    {
+        id: 2,
+        name: 'FitBite Brain Fuel Mix',
+        cat: '🧠 Study Snack',
+        price: 149,
+        oldPrice: 190,
+        qty: 62,
+        emoji: '🧠',
+        image: 'product_farmley_mix.png',
+        desc: 'Mix of savory nuts and dried fruits for sharp focus. Almonds, cashews & cranberries.',
+        tag1: 'Brain Boost',
+        tag2: 'Omega-3',
+        badge: '',
+        badgeColor: '',
+        custom: false
+    },
+    {
+        id: 3,
+        name: 'Breakfast Bars Variety',
+        cat: '🌅 Breakfast',
+        price: 199,
+        oldPrice: 260,
+        qty: 35,
+        emoji: '🌅',
+        image: 'product_breakfast_bars.png',
+        desc: '8 bars with oats, honey, and natural fruit fillings. Best value for students on the go!',
+        tag1: 'Slow Energy',
+        tag2: '8 Bars',
+        badge: '💰 Best Value',
+        badgeColor: 'purple-badge',
+        custom: false
+    },
+    {
+        id: 4,
+        name: 'FitBite 5-in-1 Seed Mix',
+        cat: '🌱 Seed Power',
+        price: 99,
+        oldPrice: 135,
+        qty: 90,
+        emoji: '🌱',
+        image: 'product_seed_mix.png',
+        desc: 'Budget-friendly superfoods. Chia, flax, pumpkin, sunflower & sesame in a resealable pouch.',
+        tag1: 'Rs.99',
+        tag2: 'Super Foods',
+        badge: '',
+        badgeColor: '',
+        custom: false
+    },
+    {
+        id: 5,
+        name: 'Roasted Namkeen Pack',
+        cat: '🌶️ Desi Flavors',
+        price: 129,
+        oldPrice: 170,
+        qty: 8,
+        emoji: '🌶️',
+        image: 'product_namkeen.png',
+        desc: 'Makhana, spiced almonds & mix namkeen. Great for movie nights and late study sessions.',
+        tag1: 'Low Fat',
+        tag2: 'High Fiber',
+        badge: '',
+        badgeColor: '',
+        custom: false
+    },
+    {
+        id: 6,
+        name: 'Weekly Snack Box',
+        cat: '📦 Combo Deal',
+        price: 799,
+        oldPrice: 1100,
+        qty: 22,
+        emoji: '📦',
+        image: 'product_weekly_box.png',
+        desc: 'Get all 6 snack packs in one box. Free delivery + 10% off. Our most popular bundle!',
+        tag1: 'All 6 Packs',
+        tag2: 'Free Delivery',
+        badge: '⭐ Weekly Box',
+        badgeColor: 'green-badge',
+        custom: false
+    }
+];
+
+// ─── STORAGE ───
+var STORAGE_KEY = 'fitbite_products_v1';
+var LOG_KEY     = 'fitbite_admin_log_v1';
+var pendingDeleteId = null;
+
+function getProducts() {
+    try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+}
+
+function saveProducts(products) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+    } catch(e) { alert('Storage error – changes may not be saved.'); }
+}
+
+function getLog() {
+    try {
+        var raw = localStorage.getItem(LOG_KEY);
+        if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return [];
+}
+
+function saveLog(log) {
+    try {
+        localStorage.setItem(LOG_KEY, JSON.stringify(log.slice(0, 100)));
+    } catch(e) {}
+}
+
+function addLog(text, type) {
+    var log = getLog();
+    type = type || 'green';
+    var now = new Date();
+    var ts = now.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}) +
+             ', ' + now.toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
+    log.unshift({ text: text, type: type, ts: ts });
+    saveLog(log);
+    renderLog();
+}
+
+// ─── RENDER LOG ───
+function renderLog() {
+    var log = getLog();
+    var list = document.getElementById('logList');
+    var empty = document.getElementById('logEmpty');
+    list.innerHTML = '';
+    if (log.length === 0) {
+        list.appendChild(Object.assign(document.createElement('div'), {
+            className: 'log-empty',
+            id: 'logEmpty',
+            textContent: 'No activity yet. Actions will appear here.'
+        }));
+        return;
+    }
+    log.forEach(function(entry) {
+        var row = document.createElement('div');
+        row.className = 'log-entry';
+        row.innerHTML =
+            '<div class="log-dot ' + entry.type + '"></div>' +
+            '<div class="log-text">' + escHtml(entry.text) + '</div>' +
+            '<div class="log-time">' + escHtml(entry.ts) + '</div>';
+        list.appendChild(row);
+    });
+}
+
+function clearLog() {
+    saveLog([]);
+    renderLog();
+    showToast('Log cleared.');
+}
+
+// ─── RENDER INVENTORY ───
+function renderInventory() {
+    var products = getProducts();
+    var tbody = document.getElementById('inventoryBody');
+    tbody.innerHTML = '';
+
+    products.forEach(function(p) {
+        var tr = document.createElement('tr');
+        var pct = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+        var status = p.qty === 0 ? 'zero' : (p.qty < 10 ? 'low' : 'high');
+        var statusLabel = p.qty === 0 ? '❌ Out of Stock' : (p.qty < 10 ? '⚠️ Low Stock' : '✅ In Stock');
+
+        var thumbHtml = p.image
+            ? '<img class="prod-thumb" src="' + escAttr(p.image) + '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">' +
+              '<div class="prod-thumb-emoji" style="display:none;">' + (p.emoji || '🌿') + '</div>'
+            : '<div class="prod-thumb-emoji">' + (p.emoji || '🌿') + '</div>';
+
+        tr.innerHTML =
+            '<td>' +
+                '<div class="product-cell">' +
+                    thumbHtml +
+                    '<div>' +
+                        '<div class="prod-name">' + escHtml(p.name) + '</div>' +
+                        '<div class="prod-cat">' + escHtml(p.cat) + '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</td>' +
+            '<td class="price-cell">Rs.' + p.price + '<br><span style="font-size:11px;color:#9ca3af;text-decoration:line-through;">Rs.' + p.oldPrice + '</span> <span style="font-size:11px;color:#16a34a;font-weight:700;">' + pct + '% off</span></td>' +
+            '<td>' +
+                '<div class="qty-cell">' +
+                    '<div class="qty-controls">' +
+                        '<button class="qty-btn" onclick="adjustQty(' + p.id + ', -1)">−</button>' +
+                        '<input class="qty-display" type="number" min="0" id="qtyInput_' + p.id + '" value="' + p.qty + '">' +
+                        '<button class="qty-btn" onclick="adjustQty(' + p.id + ', 1)">+</button>' +
+                    '</div>' +
+                '</div>' +
+            '</td>' +
+            '<td>' +
+                '<div class="badge-row">' +
+                    (p.tag1 ? '<span class="tag-chip">' + escHtml(p.tag1) + '</span>' : '') +
+                    (p.tag2 ? '<span class="tag-chip">' + escHtml(p.tag2) + '</span>' : '') +
+                '</div>' +
+            '</td>' +
+            '<td><span class="qty-badge ' + status + '">' + statusLabel + '</span></td>' +
+            '<td>' +
+                '<div style="display:flex;gap:8px;align-items:center;">' +
+                    '<button class="save-btn" onclick="saveQty(' + p.id + ')">💾 Save</button>' +
+                    (p.custom ? '<button class="delete-btn" onclick="openConfirmDelete(' + p.id + ', \'' + escAttr(p.name) + '\')">🗑️</button>' : '') +
+                '</div>' +
+            '</td>';
+
+        tbody.appendChild(tr);
+    });
+
+    updateStats(products);
+}
+
+// ─── ADJUST QTY ───
+function adjustQty(id, delta) {
+    var input = document.getElementById('qtyInput_' + id);
+    if (!input) return;
+    var val = Math.max(0, (parseInt(input.value) || 0) + delta);
+    input.value = val;
+}
+
+// ─── SAVE QTY ───
+function saveQty(id) {
+    var input = document.getElementById('qtyInput_' + id);
+    if (!input) return;
+    var newQty = Math.max(0, parseInt(input.value) || 0);
+    var products = getProducts();
+    var found = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id == id) {
+            found = products[i];
+            products[i].qty = newQty;
+            break;
+        }
+    }
+    saveProducts(products);
+    renderInventory();
+    if (found) {
+        addLog('Updated qty of "' + found.name + '" → ' + newQty + ' units', newQty < 10 ? 'orange' : 'green');
+        showToast('✅ Stock updated: ' + found.name + ' → ' + newQty + ' units');
+    }
+}
+
+// ─── STATS ───
+function updateStats(products) {
+    var total = products.length;
+    var units = 0, low = 0, value = 0;
+    products.forEach(function(p) {
+        units += p.qty;
+        if (p.qty < 10) low++;
+        value += p.price * p.qty;
+    });
+    document.getElementById('statTotalProducts').textContent = total;
+    document.getElementById('statTotalUnits').textContent = units;
+    document.getElementById('statLowStock').textContent = low;
+    document.getElementById('statValue').textContent = 'Rs.' + value.toLocaleString('en-IN');
+}
+
+// ─── ADD PRODUCT ───
+function handleAddProduct(e) {
+    e.preventDefault();
+    var name     = document.getElementById('newName').value.trim();
+    var cat      = document.getElementById('newCat').value.trim();
+    var price    = parseInt(document.getElementById('newPrice').value) || 0;
+    var oldPrice = parseInt(document.getElementById('newOldPrice').value) || 0;
+    var qty      = parseInt(document.getElementById('newQty').value) || 0;
+    var emoji    = document.getElementById('newEmoji').value.trim() || '🌿';
+    var desc     = document.getElementById('newDesc').value.trim();
+    var tag1     = document.getElementById('newTag1').value.trim();
+    var tag2     = document.getElementById('newTag2').value.trim();
+    var badge    = document.getElementById('newBadge').value.trim();
+    var badgeColor = document.getElementById('newBadgeColor').value;
+    var image    = document.getElementById('newImage').value.trim();
+
+    if (!name || !cat || price <= 0 || oldPrice <= 0) {
+        showToast('⚠️ Please fill in all required fields.');
+        return;
+    }
+
+    var products = getProducts();
+    var maxId = 0;
+    products.forEach(function(p) { if (p.id > maxId) maxId = p.id; });
+    var newId = maxId + 1;
+
+    var newProduct = {
+        id: newId,
+        name: name,
+        cat: cat,
+        price: price,
+        oldPrice: oldPrice,
+        qty: qty,
+        emoji: emoji,
+        image: image || '',
+        desc: desc,
+        tag1: tag1,
+        tag2: tag2,
+        badge: badge,
+        badgeColor: badgeColor,
+        custom: true
+    };
+
+    products.push(newProduct);
+    saveProducts(products);
+    renderInventory();
+    addLog('Added new product: "' + name + '" (ID #' + newId + '), qty: ' + qty, 'blue');
+    showToast('✅ "' + name + '" added to store!');
+    resetAddForm();
+    document.getElementById('inventoryBody').parentElement.parentElement.parentElement.scrollIntoView({behavior:'smooth'});
+}
+
+function resetAddForm() {
+    document.getElementById('addProductForm').reset();
+    document.getElementById('newEmoji').value = '🌿';
+}
+
+// ─── DELETE ───
+function openConfirmDelete(id, name) {
+    pendingDeleteId = id;
+    document.getElementById('confirmText').textContent =
+        'Remove "' + name + '" from the store? This cannot be undone.';
+    document.getElementById('confirmOverlay').classList.add('open');
+}
+
+function closeConfirm() {
+    pendingDeleteId = null;
+    document.getElementById('confirmOverlay').classList.remove('open');
+}
+
+function confirmDelete() {
+    if (!pendingDeleteId) return;
+    var id = pendingDeleteId;
+    var products = getProducts();
+    var name = '';
+    var updated = products.filter(function(p) {
+        if (p.id == id) { name = p.name; return false; }
+        return true;
+    });
+    saveProducts(updated);
+    closeConfirm();
+    renderInventory();
+    addLog('Deleted product: "' + name + '" (ID #' + id + ')', 'red');
+    showToast('🗑️ "' + name + '" removed from store.');
+}
+
+// ─── TOAST ───
+var toastTimer;
+function showToast(msg) {
+    var t = document.getElementById('adminToast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+
+// ─── UTILS ───
+function escHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+    if (!s) return '';
+    return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ─── INIT ───
+(function init() {
+    // Seed default products if no data in storage
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+        saveProducts(JSON.parse(JSON.stringify(DEFAULT_PRODUCTS)));
+    }
+    renderInventory();
+    renderLog();
+    addLog('Admin panel opened', 'blue');
+})();
+</script>
+</body>
+</html>
